@@ -105,11 +105,22 @@ module Leibniz
       distro = "#{spec['Operating System']}-#{spec['Version']}"
       ipaddress = "10.2.3.#{@last_octet}"
       @last_octet += 1
+
+      if spec.has_key?("Box")
+        box = spec["Box"]
+        if spec.has_key?("Box URL")
+          box_url = spec["Box URL"]
+        end
+      else
+        box = "opscode-#{distro}"
+        box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
+      end
+
       platform = Hash.new
       platform[:name] = spec["Server Name"]
       platform[:driver_config] = Hash.new
-      platform[:driver_config][:box] = "opscode-#{distro}"
-      platform[:driver_config][:box_url] = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
+      platform[:driver_config][:box] = box
+      platform[:driver_config][:box_url] = box_url
       platform[:driver_config][:network] = [["private_network", {:ip => ipaddress}]]
       platform[:driver_config][:require_chef_omnibus] = spec["Chef Version"] || true
       platform[:driver_config][:ipaddress] = ipaddress
